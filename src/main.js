@@ -1,18 +1,27 @@
 //@ts-check
 
+const { defineProperties } = Object;
+
 /**
- * @param {Worker|SharedWorker} self
- * @returns
+ * @param {MessagePort[]} channels
+ * @param {(ports: MessagePort[]) => void} post
+ * @returns 
  */
-const messageChannel = self => {
+const createChannel = (channels, post) => {
   const { port1, port2 } = new MessageChannel;
-  channel.set(self, port1);
+  channels.push(port1);
   port1.start();
-  return port2;
+  post([port2]);
+  return port1;
 };
 
-/** @type {WeakMap<SharedWorker|Worker,MessagePort>} */
-export const channel = new WeakMap;
+/**
+ * @param {MessagePort[]} channels
+ */
+const terminate = channels => {
+  for (const channel of channels)
+    channel.close();
+};
 
 export class SharedWorker extends globalThis.SharedWorker {
   #id;
@@ -24,14 +33,33 @@ export class SharedWorker extends globalThis.SharedWorker {
    */
   constructor(scriptURL, options) {
     super(scriptURL, { ...options, type: 'module' });
-    const { port } = this;
-    port.start();
     this.#id = `Shared-${crypto.randomUUID()}`;
-    port.postMessage(this.#id, [messageChannel(this)]);
+    /** @type {MessagePort[]} */
+    const channels = [];
+    const { port } = this;
+    const { close, postMessage } = port;
+    defineProperties(port, {
+      createChannel: {
+        value: () => createChannel(
+          channels,
+          postMessage.bind(port, this.#id)
+        )
+      },
+      close: {
+        value() {
+          terminate(channels);
+          close.call(port);
+        }
+      }
+    }).start();
+    port.postMessage(this.#id);
   }
 }
 
 export class Worker extends globalThis.Worker {
+  /** @type {MessagePort[]} */
+  #channels = [];
+
   #id;
   get id() { return this.#id }
 
@@ -42,11 +70,18 @@ export class Worker extends globalThis.Worker {
   constructor(scriptURL, options) {
     super(scriptURL, { ...options, type: 'module' });
     this.#id = `Worker-${crypto.randomUUID()}`;
-    super.postMessage(this.#id, [messageChannel(this)]);
+    super.postMessage(this.#id);
+  }
+
+  createChannel() {
+    return createChannel(
+      this.#channels,
+      super.postMessage.bind(this, this.#id)
+    );
   }
 
   terminate() {
-    channel.get(this)?.close();
+    terminate(this.#channels);
     super.terminate();
   }
 }
