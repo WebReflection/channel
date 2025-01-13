@@ -1,0 +1,28 @@
+{
+  "name": "@webreflection/channel",
+  "version": "0.0.0",
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WebReflection/channel.git"
+  },
+  "keywords": ["Worker", "SharedWorker", "MessageChannel", "channel"],
+  "author": "Andrea Giammarchi",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/main.js",
+    "./main": "./src/main.js",
+    "./worker": "./src/worker.js",
+    "./shared": "./src/shared.js"
+  },
+  "bugs": {
+    "url": "https://github.com/WebReflection/channel/issues"
+  },
+  "homepage": "https://github.com/WebReflection/channel#readme",
+  "description": ""
+}

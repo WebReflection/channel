@@ -1,23 +1,19 @@
 //@ts-check
 
 class ChannelEvent extends Event {
-  #target;
+  #port;
 
   /**
    * @param {string} type
-   * @param {MessagePort} target
+   * @param {MessagePort} port
    */
-  constructor(type, target) {
+  constructor(type, port) {
     super(type);
-    this.#target = target;
-  }
-
-  get target() {
-    return this.#target;
+    this.#port = port;
   }
 
   get ports() {
-    return [this.#target];
+    return [this.#port];
   }
 }
 

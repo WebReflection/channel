@@ -8,8 +8,7 @@ export default (self, prefix) => {
   self.addEventListener('message', logData(prefix));
 
   self.addEventListener('channel', event => {
-    const { ports: [port], target } = event;
-    console.assert(port === target, 'port and target are the same');
+    const { ports: [port] } = event;
     port.addEventListener('message', logData(`${prefix}-channel`));
   });
 };
