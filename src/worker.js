@@ -1,4 +1,4 @@
 //@ts-check
 
-import { onmessage } from './utils.js';
+import onmessage from './onmessage.js';
 onmessage(self);

@@ -26,7 +26,7 @@ const stop = event => event.stopImmediatePropagation();
 /**
  * @param {EventTarget} self
  */
-export const onmessage = self => {
+export default self => {
   let init = true;
   let id = '';
 
