@@ -82,7 +82,7 @@ addEventListener('connect', ({ ports }) => {
         // will log: "hello"
         console.log(data);
 
-        // will trigger the wc listener on main.js
+        // will trigger the swc listener on main.js
         channel.postMessage('close');
       });
     });
