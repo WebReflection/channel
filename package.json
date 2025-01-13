@@ -1,6 +1,6 @@
 {
   "name": "@webreflection/channel",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "files": [
     "src",
     "README.md",
@@ -10,7 +10,12 @@
     "type": "git",
     "url": "git+https://github.com/WebReflection/channel.git"
   },
-  "keywords": ["Worker", "SharedWorker", "MessageChannel", "channel"],
+  "keywords": [
+    "Worker",
+    "SharedWorker",
+    "MessageChannel",
+    "channel"
+  ],
   "author": "Andrea Giammarchi",
   "license": "MIT",
   "type": "module",
