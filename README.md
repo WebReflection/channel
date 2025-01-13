@@ -1,5 +1,8 @@
 # @webreflection/channel
 
+<sup>**Social Media Photo by [Pavan Trikutam](https://unsplash.com/@ptrikutam) on [Unsplash](https://unsplash.com/)**</sup>
+
+
 This module goal is to simplify the creation and orchestration of a [MessageChannel](https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel) between any main thread and either a *Worker* or a *SharedWorker*'s *port* counterpart.
 
 ## Worker
