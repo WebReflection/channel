@@ -5,6 +5,8 @@
 
 This module goal is to simplify the creation and orchestration of a [MessageChannel](https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel) between any main thread and either a *Worker* or a *SharedWorker*'s *port* counterpart.
 
+**[Live Demo](https://webreflection.github.io/channel/test/)**
+
 ## Worker
 
 In a worker, the *port* is considered the worker itself. Every new channel is signaled through the `channel` global listener, which will have a `ports: [port]` field where the `port` is the one dedicated to the *Worker*.
