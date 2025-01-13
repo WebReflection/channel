@@ -1,26 +1,51 @@
 //@ts-check
 
-/**
- * @typedef {Object} Channel
- * @prop {string} id
- * @prop {MessagePort} port
- */
+class ChannelEvent extends Event {
+  #target;
 
-const { freeze } = Object;
+  /**
+   * @param {string} type
+   * @param {MessagePort} target
+   */
+  constructor(type, target) {
+    super(type);
+    this.#target = target;
+  }
+
+  get target() {
+    return this.#target;
+  }
+
+  get ports() {
+    return [this.#target];
+  }
+}
+
+/**
+ * @param {Event} event
+ * @returns
+ */
+const stop = event => event.stopImmediatePropagation();
 
 /**
  * @param {EventTarget} self
- * @returns {Promise<Readonly<Channel>>}
  */
-export const onmessage = self => new Promise(resolve => {
-  self.addEventListener(
-    'message',
-    e => {
-      const { data: id, ports: [port] } = /** @type {MessageEvent<any>} */(e);
+export const onmessage = self => {
+  let init = true;
+  let id = '';
+
+  self.addEventListener('message', event => {
+    const { data } = /** @type {MessageEvent<any>} */(event);
+    if (init) {
+      stop(event);
+      init = false;
+      id = data;
+    }
+    else if (id === data) {
+      stop(event);
+      const { ports: [port] } = /** @type {MessageEvent<any>} */(event);
       port.start();
-      e.stopImmediatePropagation();
-      resolve(freeze(/** @type {Channel} */({ id, port })));
-    },
-    { once: true }
-  );
-});
+      self.dispatchEvent(new ChannelEvent('channel', port));
+    }
+  });
+};

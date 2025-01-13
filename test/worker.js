@@ -1,8 +1,5 @@
-import channel from '../src/worker.js';
+import '../src/worker.js';
+import logger from './utils.js';
 
-const logData = ({ data }) => console.log({ data });
-addEventListener('message', logData);
+logger(self, 'worker');
 
-const { id, port } = await channel;
-console.log('worker', { id, port });
-port.addEventListener('message', logData);
