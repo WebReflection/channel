@@ -1,7 +1,5 @@
 //@ts-check
 
-const { defineProperties } = Object;
-
 /**
  * @param {MessagePort[]} channels
  * @param {(ports: MessagePort[]) => void} post
@@ -34,24 +32,18 @@ export class SharedWorker extends globalThis.SharedWorker {
   constructor(scriptURL, options) {
     super(scriptURL, { ...options, type: 'module' });
     this.#id = `Shared-${crypto.randomUUID()}`;
-    /** @type {MessagePort[]} */
-    const channels = [];
-    const { port } = this;
+    const port = /** @type {import("./ts.js").MessagePort} */(this.port);
+    const channels = /** @type {MessagePort[]} */([]);
     const { close, postMessage } = port;
-    defineProperties(port, {
-      createChannel: {
-        value: () => createChannel(
-          channels,
-          postMessage.bind(port, this.#id)
-        )
-      },
-      close: {
-        value() {
-          terminate(channels);
-          close.call(port);
-        }
-      }
-    }).start();
+    port.createChannel = (/** @type {any?} */ data = null) => createChannel(
+      channels,
+      postMessage.bind(port, [this.#id, data])
+    );
+    port.close = () => {
+      terminate(channels);
+      close.call(port);
+    };
+    port.start();
     port.postMessage(this.#id);
   }
 }
@@ -73,10 +65,14 @@ export class Worker extends globalThis.Worker {
     super.postMessage(this.#id);
   }
 
-  createChannel() {
+  /**
+   * @param {any} [data=null]
+   * @returns
+   */
+  createChannel(data = null) {
     return createChannel(
       this.#channels,
-      super.postMessage.bind(this, this.#id)
+      super.postMessage.bind(this, [this.#id, data])
     );
   }
 

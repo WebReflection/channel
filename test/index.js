@@ -15,7 +15,7 @@ const sw = new SharedWorker('./shared.js');
 sw.port.addEventListener('message', logData('shared'));
 sw.port.postMessage('default');
 
-const swc = sw.port.createChannel();
+const swc = sw.port.createChannel({ shared: 'data' });
 swc.addEventListener('message', logData('shared-channel'));
 swc.postMessage('channel');
 
@@ -23,6 +23,6 @@ const wc = new Worker('./worker.js');
 wc.addEventListener('message', logData('worker'));
 wc.postMessage('default');
 
-const wcc = wc.createChannel();
+const wcc = wc.createChannel({ worker: 'data' });
 wcc.addEventListener('message', logData('worker-channel'));
 wcc.postMessage('channel');

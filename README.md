@@ -11,6 +11,8 @@ This module goal is to simplify the creation and orchestration of a [MessageChan
 
 In a worker, the *port* is considered the worker itself. Every new channel is signaled through the `channel` global listener, which will have a `ports: [port]` field where the `port` is the one dedicated to the *Worker*.
 
+The event also has a `data` field which might help orchestrating multiple channels without clashes (i.e. through proper data names or values useful for initialization).
+
 **main.js**
 ```js
 import { Worker } from '@webreflection/channel';
@@ -19,6 +21,8 @@ import { Worker } from '@webreflection/channel';
 const w = new Worker('./worker.js');
 
 // plus a createChannel method, usable at any time
+// which optionally accepts any data found through
+// the event.data property, beside event.ports
 const wc = w.createChannel();
 wc.addEventListener('message', ({ data }) => {
   // any posted data through the channel
@@ -36,7 +40,7 @@ wc.postMessage('hello');
 import '@webreflection/channel/worker'; // ⬅️
 
 // triggered when `createChannel()` happens on main.js
-addEventListener('channel', ({ ports: [channel] }) => {
+addEventListener('channel', ({ data, ports: [channel] }) => {
   channel.addEventListener('message', ({ data }) => {
     // will log: "hello"
     console.log(data);
@@ -58,8 +62,10 @@ import { SharedWorker } from '@webreflection/channel';
 // exact same SharedWorker API/reference
 const sw = new SharedWorker('./shared.js');
 
-// the port has an extra utility
-const swc = sw.port.createChannel();
+// the port has an extra utility which
+// optionally accepts any data found through
+// the event.data property, beside event.ports
+const swc = sw.port.createChannel({ any: 'data' });
 swc.addEventListener('message', ({ data }) => {
   // exact same as it is for the worker case
   swc.close();
@@ -76,7 +82,7 @@ addEventListener('connect', ({ ports }) => {
     // each connected thread exposes the API via each port
     // each port will trigger a `channel` event when `createChannel()`
     // is executed on the related port on the main thread
-    port.addEventListener('channel', ({ ports: [channel] }) => {
+    port.addEventListener('channel', ({ data, ports: [channel] }) => {
       // exact same logic used for workers
       channel.addEventListener('message', ({ data }) => {
         // will log: "hello"
