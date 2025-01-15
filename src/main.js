@@ -1,5 +1,8 @@
 //@ts-check
 
+let SharedWorker, Worker;
+const { SharedWorker: SW, Worker: W } = globalThis;
+
 /**
  * @param {MessagePort[]} channels
  * @param {(ports: MessagePort[]) => void} post
@@ -21,34 +24,36 @@ const terminate = channels => {
     channel.close();
 };
 
-export class SharedWorker extends globalThis.SharedWorker {
-  #id;
-  get id() { return this.#id }
+if (SW) {
+  SharedWorker = class SharedWorker extends SW {
+    #id;
+    get id() { return this.#id }
 
-  /**
-   * @param {string|URL} scriptURL
-   * @param {WorkerOptions} [options]
-   */
-  constructor(scriptURL, options) {
-    super(scriptURL, { ...options, type: 'module' });
-    this.#id = `Shared-${crypto.randomUUID()}`;
-    const port = /** @type {import("./ts.js").MessagePort} */(this.port);
-    const channels = /** @type {MessagePort[]} */([]);
-    const { close, postMessage } = port;
-    port.createChannel = (/** @type {any?} */ data = null) => createChannel(
-      channels,
-      postMessage.bind(port, [this.#id, data])
-    );
-    port.close = () => {
-      terminate(channels);
-      close.call(port);
-    };
-    port.start();
-    port.postMessage(this.#id);
+    /**
+     * @param {string|URL} scriptURL
+     * @param {WorkerOptions} [options]
+     */
+    constructor(scriptURL, options) {
+      super(scriptURL, { ...options, type: 'module' });
+      this.#id = `Shared-${crypto.randomUUID()}`;
+      const port = /** @type {import("./ts.js").MessagePort} */(this.port);
+      const channels = /** @type {MessagePort[]} */([]);
+      const { close, postMessage } = port;
+      port.createChannel = (/** @type {any?} */ data = null) => createChannel(
+        channels,
+        postMessage.bind(port, [this.#id, data])
+      );
+      port.close = () => {
+        terminate(channels);
+        close.call(port);
+      };
+      port.start();
+      port.postMessage(this.#id);
+    }
   }
 }
 
-export class Worker extends globalThis.Worker {
+Worker = class Worker extends W {
   /** @type {MessagePort[]} */
   #channels = [];
 
@@ -81,3 +86,5 @@ export class Worker extends globalThis.Worker {
     super.terminate();
   }
 }
+
+export { SharedWorker, Worker };
