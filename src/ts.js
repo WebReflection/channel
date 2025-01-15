@@ -1,4 +1,6 @@
 // ⚠️ this file exists solely to satisfy JSDoc TS in SharedWorker
+import { Worker as W, SharedWorker as SW } from 'as-module';
+
 export class MessageChannel extends globalThis.MessageChannel {}
 
 export class MessagePort extends globalThis.MessagePort {
@@ -12,11 +14,11 @@ export class MessagePort extends globalThis.MessagePort {
   }
 }
 
-export class SharedWorker extends globalThis.SharedWorker {
+export class SharedWorker extends SW {
   get id() { return 'Shared-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' }
 }
 
-export class Worker extends globalThis.Worker {
+export class Worker extends W {
   get id() { return 'Worker-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' }
 
   /**

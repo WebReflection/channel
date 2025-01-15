@@ -29,5 +29,8 @@
     "url": "https://github.com/WebReflection/channel/issues"
   },
   "homepage": "https://github.com/WebReflection/channel#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "as-module": "^0.1.3"
+  }
 }

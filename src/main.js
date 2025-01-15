@@ -1,5 +1,7 @@
 //@ts-check
 
+import { Worker as W, SharedWorker as SW } from 'as-module';
+
 let
   /** @type {typeof import("./ts.js").SharedWorker?} */
   SharedWorker = null,
@@ -9,7 +11,7 @@ let
   Worker
 ;
 
-const { MessageChannel: MC, SharedWorker: SW, Worker: W } = globalThis;
+const { MessageChannel: MC } = globalThis;
 
 /**
  * @param {MessagePort[]} channels
@@ -42,8 +44,7 @@ if (SW) {
      * @param {string | WorkerOptions} [options]
      */
     constructor(scriptURL, options) {
-      if (typeof options === 'string') options = { name: options };
-      super(scriptURL, { ...options, type: 'module' });
+      super(scriptURL, options);
       this.#id = `Shared-${crypto.randomUUID()}`;
       const port = /** @type {import("./ts.js").MessagePort} */(this.port);
       const channels = /** @type {MessagePort[]} */([]);
@@ -76,7 +77,7 @@ Worker = class Worker extends W {
    * @param {WorkerOptions} [options]
    */
   constructor(scriptURL, options) {
-    super(scriptURL, { ...options, type: 'module' });
+    super(scriptURL, options);
     this.#id = `Worker-${crypto.randomUUID()}`;
     super.postMessage(this.#id);
   }
