@@ -1,6 +1,6 @@
 {
   "name": "@webreflection/channel",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "scripts": {
     "build": "npm run ts:main && npm run ts:worker && npm run ts:shared",
     "ts:main": "tsc --allowJs --checkJs --lib dom,esnext --module nodenext --moduleResolution nodenext --target esnext -d --emitDeclarationOnly --outDir ./types ./src/main.js",
