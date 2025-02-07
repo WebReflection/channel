@@ -1,8 +1,15 @@
 {
   "name": "@webreflection/channel",
   "version": "0.2.0",
+  "scripts": {
+    "build": "npm run ts:main && npm run ts:worker && npm run ts:shared",
+    "ts:main": "tsc --allowJs --checkJs --lib dom,esnext --module nodenext --moduleResolution nodenext --target esnext -d --emitDeclarationOnly --outDir ./types ./src/main.js",
+    "ts:worker": "tsc --allowJs --checkJs --lib dom,esnext --module nodenext --moduleResolution nodenext --target esnext -d --emitDeclarationOnly --outDir ./types ./src/worker.js",
+    "ts:shared": "tsc --allowJs --checkJs --lib dom,esnext --module nodenext --moduleResolution nodenext --target esnext -d --emitDeclarationOnly --outDir ./types ./src/shared.js"
+  },
   "files": [
     "src",
+    "types",
     "README.md",
     "LICENSE"
   ],
@@ -19,11 +26,27 @@
   "author": "Andrea Giammarchi",
   "license": "MIT",
   "type": "module",
+  "types": "./types/main.d.ts",
+  "main": "./src/main.js",
+  "module": "./src/main.js",
   "exports": {
-    ".": "./src/main.js",
-    "./main": "./src/main.js",
-    "./worker": "./src/worker.js",
-    "./shared": "./src/shared.js"
+    ".": {
+      "import": "./src/main.js",
+      "types": "./types/main.d.ts"
+    },
+    "./main": {
+      "import": "./src/main.js",
+      "types": "./types/main.d.ts"
+    },
+    "./worker": {
+      "import": "./src/worker.js",
+      "types": "./types/worker.d.ts"
+    },
+    "./shared": {
+      "import": "./src/shared.js",
+      "types": "./types/shared.d.ts"
+    },
+    "./package.json": "./package.json"
   },
   "bugs": {
     "url": "https://github.com/WebReflection/channel/issues"
@@ -32,5 +55,8 @@
   "description": "",
   "dependencies": {
     "as-module": "^0.1.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
   }
 }

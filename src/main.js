@@ -41,11 +41,12 @@ if (SW) {
 
     /**
      * @param {string|URL} scriptURL
-     * @param {string | WorkerOptions} [options]
+     * @param {string|WorkerOptions} [options]
      */
     constructor(scriptURL, options) {
       super(scriptURL, options);
       this.#id = `Shared-${crypto.randomUUID()}`;
+      //@ts-ignore
       const port = /** @type {import("./ts.js").MessagePort} */(this.port);
       const channels = /** @type {MessagePort[]} */([]);
       const { close, postMessage } = port;
